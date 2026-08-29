@@ -1,0 +1,6 @@
+{
+  "name": "AuraCommerce",
+  "description": "Full-stack e-commerce platform with product catalogs, shopping cart, user registration & login, product details, order processing, and order management with an Express.js backend database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -117,9 +117,19 @@ export interface Order {
   createdAt: string;
 }
 
+export interface Coupon {
+  code: string;
+  discountPercent: number;
+  minOrderValue: number;
+  maxDiscount: number;
+  description: string;
+  isActive: boolean;
+}
+
 export interface CouponValidation {
   valid: boolean;
-  coupon: {
+  message?: string;
+  coupon?: {
     code: string;
     discountPercent: number;
     description: string;

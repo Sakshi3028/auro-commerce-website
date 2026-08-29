@@ -14,6 +14,7 @@ import { AuthModal } from './components/AuthModal';
 import { OrderHistoryView } from './components/OrderHistoryView';
 import { Footer } from './components/Footer';
 import { Product, FilterState, Order } from './types';
+import { INITIAL_PRODUCTS } from './mockData';
 import { api } from './api';
 
 const DEFAULT_FILTERS: FilterState = {
@@ -27,9 +28,9 @@ const DEFAULT_FILTERS: FilterState = {
 };
 
 function StorefrontApp() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [categories, setCategories] = useState<Array<{ name: string; count: number }>>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
 
@@ -38,16 +39,24 @@ function StorefrontApp() {
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [isOrdersPortalOpen, setIsOrdersPortalOpen] = useState(false);
 
-  // Fetch products & categories from Express API
+  // Fetch products & categories from API or client fallback
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const data = await api.getProducts(filters);
-      setProducts(data.products || []);
+      if (data && data.products && data.products.length > 0) {
+        setProducts(data.products);
+      } else if (filters.search || filters.category !== 'All' || filters.brand !== 'All') {
+        // If filter produced 0 results
+        setProducts([]);
+      } else {
+        setProducts(INITIAL_PRODUCTS);
+      }
     } catch (err: any) {
-      console.error('Failed to load catalog:', err);
-      setError('Unable to load products from Express server. Retrying...');
+      console.warn('Network catalog load fallback:', err);
+      // Fallback silently without breaking UI
+      setProducts(INITIAL_PRODUCTS);
     } finally {
       setLoading(false);
     }
